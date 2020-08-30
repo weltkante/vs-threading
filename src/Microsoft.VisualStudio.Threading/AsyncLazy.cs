@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.Threading
         /// <summary>
         /// The unique instance identifier.
         /// </summary>
-        private readonly AsyncLocal<object> recursiveFactoryCheck = new AsyncLocal<object>();
+        private readonly AsyncLocal<object?> recursiveFactoryCheck = new AsyncLocal<object?>();
 
         /// <summary>
         /// The function to invoke to produce the task.

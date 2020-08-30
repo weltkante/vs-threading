@@ -16,12 +16,12 @@
         // Be VERY explicit about the type we're binding against since
         // there is now one in System.Threading and we want to be sure
         // we're testing OUR stuff not THEIRS.
-        private Microsoft.VisualStudio.Threading.AsyncLocal<GenericParameterHelper> asyncLocal;
+        private AsyncLocal<GenericParameterHelper?> asyncLocal;
 
         public AsyncLocalTests(ITestOutputHelper logger)
             : base(logger)
         {
-            this.asyncLocal = new Microsoft.VisualStudio.Threading.AsyncLocal<GenericParameterHelper>();
+            this.asyncLocal = new AsyncLocal<GenericParameterHelper?>();
         }
 
         [Fact]
@@ -164,7 +164,7 @@
             var creates = Stopwatch.StartNew();
             for (int i = 0; i < values.Length; i++)
             {
-                this.asyncLocal = new Microsoft.VisualStudio.Threading.AsyncLocal<GenericParameterHelper>();
+                this.asyncLocal = new AsyncLocal<GenericParameterHelper?>();
             }
             creates.Stop();
 

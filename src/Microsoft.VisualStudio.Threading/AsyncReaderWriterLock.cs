@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.Threading
         /// <summary>
         /// A CallContext-local reference to the Awaiter that is on the top of the stack (most recently acquired).
         /// </summary>
-        private readonly AsyncLocal<Awaiter> topAwaiter = new AsyncLocal<Awaiter>();
+        private readonly AsyncLocal<Awaiter?> topAwaiter = new AsyncLocal<Awaiter?>();
 
         /// <summary>
         /// The set of read locks that are issued and active.

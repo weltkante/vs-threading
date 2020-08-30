@@ -623,7 +623,7 @@ namespace Microsoft.VisualStudio.Threading.Tests
         [Fact]
         public async Task ExecutionContextFlowsFromFirstCaller_NoJTF()
         {
-            var asyncLocal = new Threading.AsyncLocal<string>();
+            var asyncLocal = new AsyncLocal<string?>();
             var asyncLazy = new AsyncLazy<int>(delegate
             {
                 Assert.Equal("expected", asyncLocal.Value);
@@ -638,7 +638,7 @@ namespace Microsoft.VisualStudio.Threading.Tests
         {
             var context = this.InitializeJTCAndSC();
             var jtf = context.Factory;
-            var asyncLocal = new Threading.AsyncLocal<string>();
+            var asyncLocal = new AsyncLocal<string?>();
             var asyncLazy = new AsyncLazy<int>(
                 delegate
                 {

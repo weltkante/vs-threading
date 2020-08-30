@@ -4127,7 +4127,7 @@
         [Fact]
         public async Task ReadLockAsync_Await_CapturesExecutionContext()
         {
-            var asyncLocal = new Microsoft.VisualStudio.Threading.AsyncLocal<string>();
+            var asyncLocal = new AsyncLocal<string?>();
             asyncLocal.Value = "expected";
             using (var lck = await this.asyncLock.ReadLockAsync())
             {
@@ -4138,7 +4138,7 @@
         [Fact]
         public async Task ReadLockAsync_OnCompleted_CapturesExecutionContext()
         {
-            var asyncLocal = new Microsoft.VisualStudio.Threading.AsyncLocal<string>();
+            var asyncLocal = new AsyncLocal<string?>();
             asyncLocal.Value = "expected";
             var awaiter = this.asyncLock.ReadLockAsync().GetAwaiter();
             Assumes.False(awaiter.IsCompleted);
@@ -4167,7 +4167,7 @@
         [Fact]
         public async Task ReadLockAsync_UnsafeOnCompleted_DoesNotCaptureExecutionContext()
         {
-            var asyncLocal = new Microsoft.VisualStudio.Threading.AsyncLocal<string>();
+            var asyncLocal = new AsyncLocal<string?>();
             asyncLocal.Value = "expected";
             var awaiter = this.asyncLock.ReadLockAsync().GetAwaiter();
             Assumes.False(awaiter.IsCompleted);

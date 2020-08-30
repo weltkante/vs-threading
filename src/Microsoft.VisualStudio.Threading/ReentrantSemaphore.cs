@@ -465,7 +465,7 @@ namespace Microsoft.VisualStudio.Threading
             ///    But ExecutionContext is copy-on-write so forks don't see changes to it.
             ///    <see cref="StrongBox{T}"/> lets us store and later update the boxed value of the existing box reference.
             /// </devremarks>
-            private readonly AsyncLocal<StrongBox<bool>> reentrancyDetection = new AsyncLocal<StrongBox<bool>>();
+            private readonly AsyncLocal<StrongBox<bool>?> reentrancyDetection = new AsyncLocal<StrongBox<bool>?>();
 
             /// <summary>
             /// Initializes a new instance of the <see cref="NotAllowedSemaphore"/> class.
@@ -657,7 +657,7 @@ namespace Microsoft.VisualStudio.Threading
             /// so that we have a unique identity for each Releaser that we can recognize as a means to verify
             /// the integrity of the "stack" of semaphore reentrant requests.
             /// </devremarks>
-            private readonly AsyncLocal<Stack<StrongBox<AsyncSemaphore.Releaser>>> reentrantCount = new AsyncLocal<Stack<StrongBox<AsyncSemaphore.Releaser>>>();
+            private readonly AsyncLocal<Stack<StrongBox<AsyncSemaphore.Releaser>>?> reentrantCount = new AsyncLocal<Stack<StrongBox<AsyncSemaphore.Releaser>>?>();
 
             /// <summary>
             /// A flag to indicate this instance was misused and the data it protects should not be touched as it may be corrupted.
@@ -931,7 +931,7 @@ namespace Microsoft.VisualStudio.Threading
             /// <summary>
             /// The means to recognize that a caller has already entered the semaphore.
             /// </summary>
-            private readonly AsyncLocal<Stack<AsyncSemaphore.Releaser>> reentrantCount = new AsyncLocal<Stack<AsyncSemaphore.Releaser>>();
+            private readonly AsyncLocal<Stack<AsyncSemaphore.Releaser>?> reentrantCount = new AsyncLocal<Stack<AsyncSemaphore.Releaser>?>();
 
             /// <summary>
             /// Initializes a new instance of the <see cref="FreeformSemaphore"/> class.

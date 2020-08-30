@@ -86,7 +86,7 @@ namespace Microsoft.VisualStudio.Threading
         /// <summary>
         /// An AsyncLocal value that carries the joinable instance associated with an async operation.
         /// </summary>
-        private readonly AsyncLocal<WeakReference<JoinableTask>> joinableOperation = new AsyncLocal<WeakReference<JoinableTask>>();
+        private readonly AsyncLocal<WeakReference<JoinableTask>?> joinableOperation = new AsyncLocal<WeakReference<JoinableTask>?>();
 
         /// <summary>
         /// The set of tasks that have started but have not yet completed.

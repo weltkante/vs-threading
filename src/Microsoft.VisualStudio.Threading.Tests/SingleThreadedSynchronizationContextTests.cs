@@ -194,7 +194,7 @@ public class SingleThreadedSynchronizationContextTests : TestBase
                 var expectedValue = new object();
                 var actualValue = new TaskCompletionSource<object>();
 
-                var asyncLocal = new AsyncLocal<object>();
+                var asyncLocal = new System.Threading.AsyncLocal<object?>();
                 asyncLocal.Value = expectedValue;
                 syncContext.Post(s => actualValue.SetResult(asyncLocal.Value), null);
                 Assert.Same(expectedValue, await actualValue.Task);

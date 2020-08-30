@@ -4977,7 +4977,7 @@
 
         private class LockDerivedWriteLockAroundOnBeforeExclusiveLockReleased : AsyncReaderWriterLock
         {
-            internal AsyncAutoResetEvent OnBeforeExclusiveLockReleasedAsyncInvoked = new AsyncAutoResetEvent();
+            internal AsyncManualResetEvent OnBeforeExclusiveLockReleasedAsyncInvoked = new AsyncManualResetEvent();
 
             protected override async Task OnBeforeExclusiveLockReleasedAsync()
             {

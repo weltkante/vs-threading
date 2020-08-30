@@ -1190,7 +1190,7 @@
 
             private readonly Dictionary<Resource, Tuple<TaskCompletionSource<object?>, Task>> preparationTasks = new Dictionary<Resource, Tuple<TaskCompletionSource<object?>, Task>>();
 
-            private readonly AsyncAutoResetEvent preparationTaskBegun = new AsyncAutoResetEvent();
+            private readonly AsyncManualResetEvent preparationTaskBegun = new AsyncManualResetEvent();
 
             private readonly ITestOutputHelper logger;
 
@@ -1207,7 +1207,7 @@
                 this.logger = logger;
             }
 
-            internal AsyncAutoResetEvent PreparationTaskBegun
+            internal AsyncManualResetEvent PreparationTaskBegun
             {
                 get { return this.preparationTaskBegun; }
             }

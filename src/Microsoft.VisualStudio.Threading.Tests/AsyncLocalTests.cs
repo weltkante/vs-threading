@@ -228,8 +228,8 @@
             where T : class, new()
         {
             var asyncLocal = new AsyncLocal<T?>();
-            var player1 = new AsyncAutoResetEvent();
-            var player2 = new AsyncAutoResetEvent();
+            var player1 = new AsyncManualResetEvent();
+            var player2 = new AsyncManualResetEvent();
             await Task.WhenAll(
                 Task.Run(async delegate
                 {

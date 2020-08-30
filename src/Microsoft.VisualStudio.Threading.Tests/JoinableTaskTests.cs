@@ -2152,7 +2152,8 @@
         [Fact]
         public void SendToSyncContextCapturedFromWithinRunSynchronously()
         {
-            var countdownEvent = new AsyncCountdownEvent(2);
+            var countdownEvent1 = new TaskCompletionSource<object?>();
+            var countdownEvent2 = new TaskCompletionSource<object?>();
             var state = new GenericParameterHelper(3);
             SynchronizationContext? syncContext = null;
             Task? sendFromWithinRunSync = null;
@@ -2182,7 +2183,7 @@
                 finally
                 {
                     // Allow the message pump to exit.
-                    countdownEvent.Signal();
+                    countdownEvent1.SetResult(null);
                 }
             }, state);
                 Assert.True(executed2);
@@ -2213,11 +2214,11 @@
                 finally
                 {
                     // Allow the message pump to exit.
-                    countdownEvent.Signal();
+                    countdownEvent2.SetResult(null);
                 }
             });
 
-            countdownEvent.WaitAsync().ContinueWith(_ => this.testFrame.Continue = false, TaskScheduler.Default);
+            Task.WhenAll(countdownEvent1.Task, countdownEvent2.Task).ContinueWith(_ => this.testFrame.Continue = false, TaskScheduler.Default);
 
             this.PushFrame();
 

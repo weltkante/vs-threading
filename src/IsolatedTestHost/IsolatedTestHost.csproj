@@ -5,7 +5,6 @@
     <TargetFrameworks>net472</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <CodeAnalysisRuleSet>..\Microsoft.VisualStudio.Threading.Tests\Microsoft.VisualStudio.Threading.Tests.ruleset</CodeAnalysisRuleSet>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

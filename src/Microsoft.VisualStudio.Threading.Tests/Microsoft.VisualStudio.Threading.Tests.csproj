@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <CodeAnalysisRuleSet>Microsoft.VisualStudio.Threading.Tests.ruleset</CodeAnalysisRuleSet>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPackable>false</IsPackable>
@@ -26,8 +25,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="coverlet.msbuild" Version="2.9.0" />
-    <PackageReference Include="MicroBuild.Nonshipping" Version="$(MicroBuildVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="Nullable" Version="1.2.1">
       <PrivateAssets>all</PrivateAssets>
@@ -50,10 +47,6 @@
     <Reference Include="System.Configuration" />
     <Reference Include="WindowsBase" />
     <ProjectReference Include="..\IsolatedTestHost\IsolatedTestHost.csproj">
-      <Private>true</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Microsoft.VisualStudio.Threading.Tests.Win7RegistryWatcher\Microsoft.VisualStudio.Threading.Tests.Win7RegistryWatcher.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <Private>true</Private>
     </ProjectReference>
   </ItemGroup>

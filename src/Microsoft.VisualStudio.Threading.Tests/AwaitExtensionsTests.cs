@@ -394,7 +394,7 @@ namespace Microsoft.VisualStudio.Threading.Tests
                     CreateNoWindow = true,
                     WindowStyle = ProcessWindowStyle.Hidden,
                 });
-            int exitCode = await p.WaitForExitAsync();
+            int exitCode = await AwaitExtensions.WaitForExitAsync(p);
             Assert.Equal(55, exitCode);
         }
 
@@ -409,7 +409,7 @@ namespace Microsoft.VisualStudio.Threading.Tests
                     WindowStyle = ProcessWindowStyle.Hidden,
                 });
             p.WaitForExit();
-            Task<int> t = p.WaitForExitAsync();
+            Task<int> t = AwaitExtensions.WaitForExitAsync(p);
             Assert.True(t.IsCompleted);
             Assert.Equal(55, t.Result);
         }
@@ -421,7 +421,7 @@ namespace Microsoft.VisualStudio.Threading.Tests
             var process = new Process();
             process.StartInfo.FileName = processName;
             process.StartInfo.CreateNoWindow = true;
-            await Assert.ThrowsAsync<InvalidOperationException>(() => process.WaitForExitAsync());
+            await Assert.ThrowsAsync<InvalidOperationException>(() => AwaitExtensions.WaitForExitAsync(process));
         }
 
         [Fact]
@@ -432,7 +432,7 @@ namespace Microsoft.VisualStudio.Threading.Tests
             Process p = Process.Start(new ProcessStartInfo(processName) { CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden });
             try
             {
-                Task<int> t = p.WaitForExitAsync();
+                Task<int> t = AwaitExtensions.WaitForExitAsync(p);
                 Assert.False(t.IsCompleted);
                 p.Kill();
                 int exitCode = await t;
@@ -460,7 +460,7 @@ namespace Microsoft.VisualStudio.Threading.Tests
             try
             {
                 var cts = new CancellationTokenSource();
-                Task<int> t = p.WaitForExitAsync(cts.Token);
+                Task<int> t = AwaitExtensions.WaitForExitAsync(p, cts.Token);
                 Assert.False(t.IsCompleted);
                 cts.Cancel();
                 await Assert.ThrowsAsync<TaskCanceledException>(() => t);

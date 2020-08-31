@@ -389,12 +389,8 @@
         {
             IHangReportContributor contributor = this.Context;
             var report = contributor.GetHangReport();
-            Assert.Equal("application/xml", report.ContentType);
-            Assert.NotNull(report.ContentName);
-            this.Logger.WriteLine(report.Content);
-            var dgml = XDocument.Parse(report.Content);
-            Assert.Equal("DirectedGraph", dgml.Root.Name.LocalName);
-            Assert.Equal("http://schemas.microsoft.com/vs/2009/dgml", dgml.Root.Name.Namespace);
+            Assert.NotNull(report);
+            this.Logger.WriteLine(report.ToString());
         }
 
         [Fact]
@@ -406,12 +402,9 @@
             this.Factory.RunAsync(delegate
             {
                 IHangReportContributor contributor = this.Context;
-                var report = contributor.GetHangReport();
-                this.Logger.WriteLine(report.Content);
-                var dgml = XDocument.Parse(report.Content);
-                var collectionLabels = from node in dgml.Root.Element(XName.Get("Nodes", DgmlNamespace)).Elements()
-                                       where node.Attribute(XName.Get("Category"))?.Value == "Collection"
-                                       select node.Attribute(XName.Get("Label"))?.Value;
+                var report = Assert.IsType<JoinableTaskContext.HangReport>(contributor.GetHangReport());
+                this.Logger.WriteLine(report.ToString());
+                var collectionLabels = report.Nodes.OfType<JoinableTaskContext.HangReport.CollectionNode>().Select(x => x.Label);
                 Assert.Contains(collectionLabels, label => label == jtcName);
                 return Task.CompletedTask;
             });
@@ -429,12 +422,9 @@
             });
             mainThreadRequested.Wait();
             IHangReportContributor contributor = this.Context;
-            var report = contributor.GetHangReport();
-            this.Logger.WriteLine(report.Content);
-            var dgml = XDocument.Parse(report.Content);
-            var collectionLabels = from node in dgml.Root.Element(XName.Get("Nodes", DgmlNamespace)).Elements()
-                                   where node.Attribute(XName.Get("Category"))?.Value == "Task"
-                                   select node.Attribute(XName.Get("Label"))?.Value;
+            var report = Assert.IsType<JoinableTaskContext.HangReport>(contributor.GetHangReport());
+            this.Logger.WriteLine(report.ToString());
+            var collectionLabels = report.Nodes.OfType<JoinableTaskContext.HangReport.TaskNode>().Select(x => x.Label);
             Assert.Contains(collectionLabels, label => label.Contains(nameof(this.GetHangReportProducesDgmlWithMethodNameRequestingMainThread)));
         }
 
@@ -452,12 +442,9 @@
                 });
                 await messagePosted.WaitAsync();
                 IHangReportContributor contributor = this.Context;
-                var report = contributor.GetHangReport();
-                this.Logger.WriteLine(report.Content);
-                var dgml = XDocument.Parse(report.Content);
-                var collectionLabels = from node in dgml.Root.Element(XName.Get("Nodes", DgmlNamespace)).Elements()
-                                       where node.Attribute(XName.Get("Category"))?.Value == "Task"
-                                       select node.Attribute(XName.Get("Label"))?.Value;
+                var report = Assert.IsType<JoinableTaskContext.HangReport>(contributor.GetHangReport());
+                this.Logger.WriteLine(report.ToString());
+                var collectionLabels = report.Nodes.OfType<JoinableTaskContext.HangReport.TaskNode>().Select(x => x.Label);
                 Assert.Contains(collectionLabels, label => label.Contains(nameof(this.YieldingMethodAsync)));
             });
         }
@@ -470,7 +457,7 @@
             {
                 IHangReportContributor contributor = this.Context;
                 var report = contributor.GetHangReport();
-                this.Logger.WriteLine(report.Content);
+                this.Logger.WriteLine(report.ToString());
                 endTestTokenSource.Cancel();
                 this.Context.OnReportHang = null;
             };

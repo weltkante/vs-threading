@@ -4056,10 +4056,7 @@
             IHangReportContributor reportContributor = this.asyncLock;
             var report = reportContributor.GetHangReport();
             Assert.NotNull(report);
-            Assert.NotNull(report.Content);
-            Assert.NotNull(report.ContentType);
-            Assert.NotNull(report.ContentName);
-            this.Logger.WriteLine(report.Content);
+            this.Logger.WriteLine(report.ToString());
         }
 
         [Fact]
@@ -4256,7 +4253,7 @@
         {
             IHangReportContributor reportContributor = this.asyncLock;
             var report = reportContributor.GetHangReport();
-            this.Logger.WriteLine(report.Content);
+            this.Logger.WriteLine(report.ToString());
         }
 
         private void LockReleaseTestHelper(AsyncReaderWriterLock.Awaitable initialLock)

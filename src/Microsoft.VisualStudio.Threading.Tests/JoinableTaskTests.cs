@@ -3979,7 +3979,7 @@
             IHangReportContributor contributor = context;
             var report = contributor.GetHangReport();
             this.Logger.WriteLine("DGML task graph");
-            this.Logger.WriteLine(report.Content);
+            this.Logger.WriteLine(report.ToString());
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)] // must not be inlined so that locals are guaranteed to be freed.

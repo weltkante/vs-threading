@@ -17,6 +17,66 @@ namespace Microsoft.VisualStudio.Threading
 
     partial class AsyncReaderWriterLock : IHangReportContributor
     {
+#pragma warning disable CS1591
+        public class HangReport : HangReportContribution
+        {
+            public class Node
+            {
+                public string ID;
+                public string Label;
+                public string[] Flags;
+                public string Group;
+
+                public Node(string id, string label, string[] flags, string group)
+                {
+                    ID = id;
+                    Label = label;
+                    Flags = flags;
+                    Group = group;
+                }
+            }
+
+            public sealed class Link
+            {
+                public string Source;
+                public string Target;
+
+                public Link(string source, string target)
+                {
+                    Source = source;
+                    Target = target;
+                }
+            }
+
+            public bool LockAcquired;
+            public List<Node> Nodes;
+            public List<Link> Links;
+
+            public HangReport(bool lockAcquired, List<Node> nodes, List<Link> links)
+            {
+                LockAcquired = lockAcquired;
+                Nodes = nodes;
+                Links = links;
+            }
+
+            public override string ToString()
+            {
+                var sb = new StringBuilder();
+
+                if (!LockAcquired)
+                    sb.AppendLine("WARNING: failed to acquire our own lock in formulating this report.");
+
+                foreach (var node in Nodes)
+                    sb.AppendLine($"group {node.Group} node {node.ID} label {node.Label} flags {node.Flags}");
+
+                foreach (var link in Links)
+                    sb.AppendLine($"dependency {link.Source} -> {link.Target}");
+
+                return sb.ToString();
+            }
+        }
+#pragma warning restore CS1591
+
         [Flags]
         private enum AwaiterCollection
         {
@@ -70,12 +130,6 @@ namespace Microsoft.VisualStudio.Threading
                 try
                 {
                     Monitor.TryEnter(this.syncObject, 1000, ref lockAcquired);
-                    var dgml = CreateDgml(out XElement nodes, out XElement links);
-
-                    if (!lockAcquired)
-                    {
-                        nodes.Add(Dgml.Comment("WARNING: failed to acquire our own lock in formulating this report."));
-                    }
 
                     var liveAwaiterMetadata = new HashSet<AwaiterMetadata>();
                     liveAwaiterMetadata.UnionWith(this.waitingReaders.Select(a => new AwaiterMetadata(a, AwaiterCollection.Waiting | AwaiterCollection.ReadLock)));
@@ -89,19 +143,13 @@ namespace Microsoft.VisualStudio.Threading
                     var releasedAwaiterMetadata = new HashSet<AwaiterMetadata>(liveAwaiters.SelectMany(GetLockStack).Distinct().Except(liveAwaiters).Select(AwaiterMetadata.Released));
                     var allAwaiterMetadata = new HashSet<AwaiterMetadata>(liveAwaiterMetadata.Concat(releasedAwaiterMetadata));
 
-                    // Build the lock stack containers.
-                    dgml.WithContainers(allAwaiterMetadata.Select(am => am.GroupId).Distinct().Select(id => Dgml.Container(id, "Lock stack")));
-
                     // Add each lock awaiter.
-                    nodes.Add(allAwaiterMetadata.Select(am => CreateAwaiterNode(am.Awaiter).WithCategories(am.Categories.ToArray()).ContainedBy(am.GroupId, dgml)));
+                    var nodes = allAwaiterMetadata.Select(am => CreateAwaiterNode(am.Awaiter, am.Categories.ToArray(), am.GroupId)).ToList();
 
                     // Link the lock stacks among themselves.
-                    links.Add(allAwaiterMetadata.Where(a => a.Awaiter.NestingLock != null).Select(a => Dgml.Link(GetAwaiterId(a.Awaiter.NestingLock!), GetAwaiterId(a.Awaiter))));
+                    var links = allAwaiterMetadata.Where(a => a.Awaiter.NestingLock != null).Select(a => new HangReport.Link(GetAwaiterId(a.Awaiter.NestingLock!), GetAwaiterId(a.Awaiter))).ToList();
 
-                    return new HangReportContribution(
-                        dgml.ToString(),
-                        "application/xml",
-                        this.GetType().Name + ".dgml");
+                    return new HangReport(lockAcquired, nodes, links);
                 }
                 finally
                 {
@@ -113,23 +161,11 @@ namespace Microsoft.VisualStudio.Threading
             }
         }
 
-        private static XDocument CreateDgml(out XElement nodes, out XElement links)
-        {
-            return Dgml.Create(out nodes, out links, layout: "ForceDirected", direction: "BottomToTop")
-                .WithCategories(
-                    Dgml.Category("Waiting", icon: "pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/kpi_yellow_cat1_large.png"),
-                    Dgml.Category("Issued", icon: "pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/kpi_green_sym2_large.png"),
-                    Dgml.Category("Released", icon: "pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/kpi_red_sym2_large.png"),
-                    Dgml.Category("ReadLock", background: "#FF7476AF"),
-                    Dgml.Category("UpgradeableReadLock", background: "#FFFFBF00"),
-                    Dgml.Category("WriteLock", background: "#FFC79393"));
-        }
-
         /// <summary>
         /// Appends details of a given collection of awaiters to the hang report.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private static XElement CreateAwaiterNode(Awaiter awaiter)
+        private static HangReport.Node CreateAwaiterNode(Awaiter awaiter, string[] categories, string containedBy)
         {
             Requires.NotNull(awaiter, nameof(awaiter));
 
@@ -167,8 +203,7 @@ namespace Microsoft.VisualStudio.Threading
                 label.Length -= Environment.NewLine.Length;
             }
 
-            XElement element = Dgml.Node(GetAwaiterId(awaiter), label.ToString());
-            return element;
+            return new HangReport.Node(GetAwaiterId(awaiter), label.ToString(), categories, containedBy);
         }
 
         private static string GetAwaiterId(Awaiter awaiter)

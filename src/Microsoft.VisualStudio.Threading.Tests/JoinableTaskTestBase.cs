@@ -47,9 +47,8 @@
         protected int GetPendingTasksCount()
         {
             IHangReportContributor hangContributor = this.context;
-            var contribution = hangContributor.GetHangReport();
-            var dgml = XDocument.Parse(contribution.Content);
-            return dgml.Descendants(XName.Get("Node", DgmlNamespace)).Count(n => n.Attributes("Category").Any(c => c.Value == "Task"));
+            var contribution = Assert.IsType<JoinableTaskContext.HangReport>(hangContributor.GetHangReport());
+            return contribution.Nodes.OfType<JoinableTaskContext.HangReport.TaskNode>().Count();
         }
 
         protected void SimulateUIThread(Func<Task> testMethod)

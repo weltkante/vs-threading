@@ -21,44 +21,18 @@ namespace Microsoft.VisualStudio.Threading
         /// <summary>
         /// Initializes a new instance of the <see cref="HangReportContribution"/> class.
         /// </summary>
-        /// <param name="content">The content for the hang report.</param>
-        /// <param name="contentType">The MIME type of the attached content.</param>
-        /// <param name="contentName">The suggested filename of the content when it is attached in a report.</param>
-        public HangReportContribution(string content, string? contentType, string? contentName)
+        public HangReportContribution()
         {
-            Requires.NotNull(content, nameof(content));
-            this.Content = content;
-            this.ContentType = contentType;
-            this.ContentName = contentName;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HangReportContribution"/> class.
         /// </summary>
-        /// <param name="content">The content for the hang report.</param>
-        /// <param name="contentType">The MIME type of the attached content.</param>
-        /// <param name="contentName">The suggested filename of the content when it is attached in a report.</param>
         /// <param name="nestedReports">Nested reports.</param>
-        public HangReportContribution(string content, string? contentType, string? contentName, params HangReportContribution[]? nestedReports)
-            : this(content, contentType, contentName)
+        public HangReportContribution(params HangReportContribution[]? nestedReports)
         {
             this.NestedReports = nestedReports;
         }
-
-        /// <summary>
-        /// Gets the content of the hang report.
-        /// </summary>
-        public string Content { get; private set; }
-
-        /// <summary>
-        /// Gets the MIME type for the content.
-        /// </summary>
-        public string? ContentType { get; private set; }
-
-        /// <summary>
-        /// Gets the suggested filename for the content.
-        /// </summary>
-        public string? ContentName { get; private set; }
 
         /// <summary>
         /// Gets the nested hang reports, if any.

@@ -48,18 +48,6 @@ namespace Microsoft.VisualStudio.Threading
         }
 
         /// <summary>
-        /// Provides await functionality for ordinary <see cref="WaitHandle"/>s.
-        /// </summary>
-        /// <param name="handle">The handle to wait on.</param>
-        /// <returns>The awaiter.</returns>
-        public static TaskAwaiter GetAwaiter(this WaitHandle handle)
-        {
-            Requires.NotNull(handle, nameof(handle));
-            Task task = handle.ToTask();
-            return task.GetAwaiter();
-        }
-
-        /// <summary>
         /// Converts a <see cref="YieldAwaitable"/> to a <see cref="ConfiguredTaskYieldAwaitable"/>.
         /// </summary>
         /// <param name="yieldAwaitable">The result of <see cref="Task.Yield()"/>.</param>

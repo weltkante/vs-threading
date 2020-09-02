@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.Threading
         /// <summary>
         /// A task that is faulted with an <see cref="ObjectDisposedException"/>.
         /// </summary>
-        private static readonly Task<Releaser> DisposedReleaserTask = TplExtensions.FaultedTask<Releaser>(new ObjectDisposedException(typeof(AsyncSemaphore).FullName));
+        private static readonly Task<Releaser> DisposedReleaserTask = Task.FromException<Releaser>(new ObjectDisposedException(typeof(AsyncSemaphore).FullName));
 
         /// <summary>
         /// A task that is canceled without a specific token.
